@@ -13,7 +13,6 @@
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
   </head>
-
   <body>
     <ul>
       <li>
@@ -23,23 +22,39 @@
       </li>
       
       <li>
-        <a href="/">
+        <a href="/photos">
           All public photos
         </a>
       </li>
 
+      <%if session[:user_id] == nil%>
         <li>
-          <a href="/">
+          <a href="/user_sign_in">
             Sign in
           </a>
         </li>
 
         <li>
-          <a href="/">
+          <a href="/user_sign_up">
             Sign up
           </a>
         </li>
+      <%else%>
+        <li>
+          <a href="/edit_user_profile">
+            <%=User.where({:id => session[:user_id]}).at(0).username%>
+          </a>
+        </li>
+
+        <li>
+          <a href="/user_sign_out">
+            Sign out
+          </a>
+        </li>
+      <%end%>
     </ul>
+    <%= notice %>
+    <%= alert %>
     <%= yield %>
   </body>
 </html>

@@ -14,6 +14,7 @@
 
     <th></th>
   </tr>
+  <%logged_in = not(session[:user_id] == nil)%>
   <%@users.each do |user|%>
     <tr>
       <td>
@@ -27,6 +28,24 @@
           <%end%>
       </td>
       <td>
+      <%if logged_in%>
+      <%follow_request = user.followers.where({:sender_id => session[:user_id]}).at(0)%>
+      <%if follow_request == nil%>
+        <form action="/insert_follow_request" method="post">
+              <input type="hidden" name="query_recipient_id" value=<%=user.id%>>
+
+              <button>
+                Follow
+              </button>
+            </form>
+      <% elsif  follow_request.status == "accepted"%>
+        <a href="/delete_follow_request/<%=user.id%>">
+              Unfollow
+            </a>
+      <%else%>
+        Request sent. <a href="/delete_follow_request/<%=user.id%>">Cancel</a>
+      <%end%>
+      <%end%>
       </td>
       <td>
         <a href="/users/<%=user.username%>">Show details</a>

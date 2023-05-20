@@ -3,8 +3,21 @@ class UserAuthenticationController < ApplicationController
   # skip_before_action(:force_user_sign_in, { :only => [:sign_up_form, :create, :sign_in_form, :create_cookie] })
 
   def index 
-    @users = User.all
+    @users = User.all.order({ :username => :asc })
     render({:template => "user_authentication/index.html.erb"})
+  end
+
+  def show
+    if session[:user_id] == nil
+      redirect_to("/user_sign_up", {:notice => "You have to sign up first"})
+    else
+      @user = User.where({:username => params.fetch("username")}).at(0)
+      if (@user.private) & (@user.all_followers.where({:sender_id => session[:user_id]}).at(0) == nil)
+        redirect_to("/", {:alert => "You're not authorized for that."})
+      else
+        render({:template => "user_authentication/show.html.erb"})
+      end
+    end
   end
 
   def sign_in_form
@@ -46,8 +59,8 @@ class UserAuthenticationController < ApplicationController
     @user.email = params.fetch("query_email")
     @user.password = params.fetch("query_password")
     @user.password_confirmation = params.fetch("query_password_confirmation")
-    @user.comments_count = params.fetch("query_comments_count")
-    @user.likes_count = params.fetch("query_likes_count")
+    @user.comments_count = 0
+    @user.likes_count = 0
     @user.private = params.fetch("query_private", false)
     @user.username = params.fetch("query_username")
 
