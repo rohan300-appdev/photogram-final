@@ -12,10 +12,24 @@ class UserAuthenticationController < ApplicationController
       redirect_to("/user_sign_up", {:notice => "You have to sign up first"})
     else
       @user = User.where({:username => params.fetch("username")}).at(0)
-      if (@user.private) & (@user.all_followers.where({:sender_id => session[:user_id]}).at(0) == nil)
+      if (@user.private) & (@user.all_followers.where({:sender_id => session[:user_id]}).at(0) == nil) & (@user.id != session[:user_id])
         redirect_to("/", {:alert => "You're not authorized for that."})
       else
         render({:template => "user_authentication/show.html.erb"})
+      end
+    end
+  end
+
+  def show_feed
+    if session[:user_id] == nil
+      redirect_to("/user_sign_up", {:notice => "You have to sign up first"})
+    else
+      @user = User.where({:username => params.fetch("username")}).at(0)
+      if (@user.private) & (@user.all_followers.where({:sender_id => session[:user_id]}).at(0) == nil)
+        redirect_to("/", {:alert => "You're not authorized for that."})
+      else
+        @photos = @user.following_photos
+        render({:template => "user_authentication/show_feed.html.erb"})
       end
     end
   end
@@ -77,6 +91,20 @@ class UserAuthenticationController < ApplicationController
     
   def edit_profile_form
     render({ :template => "user_authentication/edit_profile.html.erb" })
+  end
+
+  def update_user
+    @user = @current_user
+    @user.private = params.fetch("query_private", false)
+    @user.username = params.fetch("query_username")
+    
+    if @user.valid?
+      @user.save
+
+      redirect_to("/", { :notice => "User account updated successfully."})
+    else
+      render({ :template => "user_authentication/edit_profile_with_errors.html.erb" , :alert => @user.errors.full_messages.to_sentence })
+    end
   end
 
   def update

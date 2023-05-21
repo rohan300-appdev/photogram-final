@@ -79,3 +79,4 @@ end
 
 gem "carrierwave"
 gem "cloudinary"
+

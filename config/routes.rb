@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   get("/photos", { :controller => "photos", :action => "index" })
   
   get("/photos/:path_id", { :controller => "photos", :action => "show" })
+
   
   # UPDATE
   
@@ -86,6 +87,8 @@ Rails.application.routes.draw do
   get("/edit_user_profile", { :controller => "user_authentication", :action => "edit_profile_form" })       
   # UPDATE RECORD
   post("/modify_user", { :controller => "user_authentication", :action => "update" })
+
+  get("/modify_user/:user_id", { :controller => "user_authentication", :action => "update_user" })
   
   # DELETE RECORD
   get("/cancel_user_account", { :controller => "user_authentication", :action => "destroy" })
@@ -93,6 +96,7 @@ Rails.application.routes.draw do
   get("/users", {:controller => "user_authentication", :action => "index"})
   get("/", {:controller => "user_authentication", :action => "index"})
   get("/users/:username", {:controller => "user_authentication", :action => "show"})
+  get("/users/:username/feed", {:controller => "user_authentication", :action => "show_feed"})
 
   # ------------------------------
 

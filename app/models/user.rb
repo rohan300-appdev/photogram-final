@@ -33,5 +33,14 @@ class User < ApplicationRecord
     return self.is_following.where({:status => "accepted"})
   end
 
+  has_many :is_following_check, -> {where(status: "accepted")}, class_name: 'FollowRequest', foreign_key: 'sender_id'
+
+  has_many :followers_pending, -> {where(status: "pending")}, class_name: 'FollowRequest', foreign_key: 'recipient_id'
+
   has_many :photos, class_name: "Photo", foreign_key: "owner_id"
+
+  has_many :is_following_users, through: :is_following_check, source: :followed_by
+
+  has_many :following_photos, through: :is_following_users, source: :photos
+
 end

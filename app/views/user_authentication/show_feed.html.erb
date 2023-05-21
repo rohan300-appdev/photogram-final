@@ -8,7 +8,7 @@
   <dd>
     <%=@user.all_followers.length()%>
 
-    <%if @user.id != session[:user_id]%>
+  
     <%if (@user.followers.where({:sender_id => session[:user_id]}).length() == 0)%>
         <div>
             <form action="/insert_follow_request" method="post">
@@ -26,56 +26,10 @@
     </div>
     <%end%>
 
-    <%else%>
-    <%follow_requests = @user.followers_pending%>
-    <h4>Pending follow requests</h4>
-
-      <ul>
-          <%follow_requests.each do |req|%>
-          <li>
-            <%=req.sent_by.username%>
-
-            <form action="/modify_follow_request/<%=req.id%>" method="post">
-              <input name="query_status" value="accepted" type="hidden">
-
-              <button>
-                Accept
-              </button>
-            </form>
-
-            <form action="/modify_follow_request/<%=req.id%>" method="post">
-              <input name="query_status" value="rejected" type="hidden">
-            
-              <button>
-                Reject
-              </button>
-            </form>
-          </li>
-          <%end%>
-      </ul>
-    <%end%>
-
   </dd>
 
   <dt>Following</dt>
   <dd><%=@user.all_is_following.length()%></dd>
-
-  <%if @user.id == session[:user_id]%>
-
-  <dt>Edit user</dt>
-  <dd>
-    <form action="/modify_user/<%=@user.id%>">
-      <label for="browser_username">Username</label>
-      <input id="browser_username" type="text" name="query_username" placeholder="Enter a username..."
-        value="<%=@user.username%>">
-
-      <label for="browser_private">Private?</label>
-      <input id="browser_private" type="checkbox" name="query_private" >
-
-      <button>Update user</button>
-    </form>
-  </dd>
-  <%end%>
 
 </dl>
 
@@ -88,15 +42,15 @@
       <a href="/users/bob/liked_photos">Liked photos</a>
     </li>
     <li>
-      <a href="/users/<%=@user.username%>/feed">Feed</a>
+      <a href="/users/bob/feed">Feed</a>
     </li>
     <li>
       <a href="/users/bob/discover">Discover</a>
     </li>
   </ul>
 </nav>
-<%photos = @user.photos%>
-<h2>Own photos (<%=photos.length()%>)</h2>
+
+<h2>Feed (<%=@photos.length()%>)</h2>
 
 <table border="1">
   <tr>
@@ -122,7 +76,7 @@
 
     <th></th>
   </tr>
-  <% photos.each do |a_photo| %>
+  <% @photos.each do |a_photo| %>
       <tr>
         <td>
           <img src="<%= a_photo.image %>">
